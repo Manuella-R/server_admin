@@ -2,7 +2,7 @@
 // Database connection settings
 $servername = "localhost";
 $username = "root";
-$password = "your_password";
+$password = "";
 $dbname = "Cat1";
 
 // Create connection
