@@ -16,15 +16,22 @@ if ($conn->connect_error) {
 // Handle form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = $_POST['username'];
-    $password = password_hash($_POST['password'], PASSWORD_BCRYPT); // Hash the password for security
+    $password = $_POST['password'];
 
-    // Insert the user into the database
-    $sql = "INSERT INTO users (username, password) VALUES ('$username', '$password')";
+    // Check if the user exists in the database
+    $sql = "SELECT * FROM users WHERE username='$username'";
+    $result = $conn->query($sql);
 
-    if ($conn->query($sql) === TRUE) {
-        echo "User registered successfully!";
+    if ($result->num_rows > 0) {
+        // Fetch the user data
+        $row = $result->fetch_assoc();
+        if (password_verify($password, $row['password'])) {
+            echo "Login successful! Welcome, " . $username . "!";
+        } else {
+            echo "Invalid password.";
+        }
     } else {
-        echo "Error: " . $sql . "<br>" . $conn->error;
+        echo "User not found.";
     }
 
     $conn->close();
@@ -34,18 +41,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Signup Page</title>
+    <title>Login Page</title>
 </head>
 <body>
-    <h2>Signup</h2>
-    <form method="POST" action="signup.php">
+    <h2>Login</h2>
+    <form method="POST" action="login.php">
         <label for="username">Username:</label><br>
         <input type="text" id="username" name="username" required><br><br>
 
         <label for="password">Password:</label><br>
         <input type="password" id="password" name="password" required><br><br>
 
-        <input type="submit" value="Signup">
+        <input type="submit" value="Login">
     </form>
 </body>
 </html>
